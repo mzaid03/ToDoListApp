@@ -1,9 +1,9 @@
 
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import TodoForm, { NewTodo } from "@/components/TodoForm";
-import TodoItem, { Todo } from "@/components/TodoItem";
-import FilterBar from "@/components/FilterBar";
+import TodoForm, { NewTodo } from "../components/TodoForm";
+import TodoItem, { Todo } from "../components/TodoItem";
+import FilterBar from "../components/FilterBar";
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, { ...init, headers: { "Content-Type": "application/json", ...(init?.headers||{}) } });
