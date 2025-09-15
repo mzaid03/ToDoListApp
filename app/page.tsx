@@ -25,16 +25,39 @@ export default function Page(){
   const [filters, setFilters] = useState<{q:string; status:"all"|"open"|"done"; priority: "all"|"LOW"|"MEDIUM"|"HIGH"}>({ q:"", status:"all", priority:"all" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string|null>(null);
+  const [localMode, setLocalMode] = useState(false);
+
+  // Simple local fallback store
+  function readLocal(): Todo[] {
+    try { return JSON.parse(localStorage.getItem("todos") || "[]"); } catch { return []; }
+  }
+  function writeLocal(items: Todo[]) {
+    localStorage.setItem("todos", JSON.stringify(items));
+  }
 
   async function load(){
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({ q: filters.q, status: filters.status, priority: filters.priority });
-      const data = await api<Todo[]>(`/api/todos?${params.toString()}`);
-      setTodos(data);
+      if (localMode) {
+        let items = readLocal();
+        const q = filters.q.toLowerCase();
+        if (filters.status !== "all") items = items.filter(t => (filters.status === "done") === t.completed);
+        if (filters.priority !== "all") items = items.filter(t => t.priority === filters.priority);
+        if (q) items = items.filter(t => t.title.toLowerCase().includes(q) || (t.tagsCsv||"").toLowerCase().includes(q));
+        setTodos(items);
+      } else {
+        const params = new URLSearchParams({ q: filters.q, status: filters.status, priority: filters.priority });
+        const data = await api<Todo[]>(`/api/todos?${params.toString()}`);
+        setTodos(data);
+      }
     } catch (e:any) {
-      setError(e?.message || "Failed to load to‑dos");
+      const msg = e?.message || "Failed to load to‑dos";
+      setError(msg);
+      if (/^Database not configured/i.test(msg)) {
+        setLocalMode(true);
+        setTodos(readLocal());
+      }
     } finally {
       setLoading(false);
     }
@@ -52,6 +75,11 @@ export default function Page(){
       tagsCsv: newTodo.tagsCsv ?? null,
       createdAt: new Date().toISOString(),
     };
+    if (localMode) {
+      const next = [optimistic, ...todos];
+      setTodos(next); writeLocal(next);
+      return;
+    }
     setTodos(prev => [optimistic, ...prev]);
     try {
       const created = await api<Todo>(`/api/todos`, { method: "POST", body: JSON.stringify(newTodo) });
@@ -59,12 +87,17 @@ export default function Page(){
     } catch (e:any){
       setTodos(prev => prev.filter(t => t.id !== optimistic.id));
       setError(e?.message || "Failed to create to‑do");
+      if (/^Database not configured/i.test(e?.message||"")) {
+        setLocalMode(true);
+        const next = [optimistic, ...readLocal()]; writeLocal(next); setTodos(next);
+      }
     }
   }
 
   async function toggle(id:number, completed:boolean){
     const old = todos;
     setTodos(prev => prev.map(t => t.id===id ? { ...t, completed } : t));
+    if (localMode) { writeLocal(todos.map(t=>t.id===id?{...t,completed}:t)); return; }
     try { await api(`/api/todos/${id}`, { method: "PATCH", body: JSON.stringify({ completed }) }); }
     catch (e:any) { setTodos(old); setError(e?.message || "Failed to update"); }
   }
@@ -72,6 +105,7 @@ export default function Page(){
   async function rename(id:number, title:string){
     const old = todos;
     setTodos(prev => prev.map(t => t.id===id ? { ...t, title } : t));
+    if (localMode) { writeLocal(todos.map(t=>t.id===id?{...t,title}:t)); return; }
     try { await api(`/api/todos/${id}`, { method: "PATCH", body: JSON.stringify({ title }) }); }
     catch (e:any) { setTodos(old); setError(e?.message || "Failed to rename"); }
   }
@@ -79,6 +113,7 @@ export default function Page(){
   async function remove(id:number){
     const old = todos;
     setTodos(prev => prev.filter(t => t.id!==id));
+    if (localMode) { writeLocal(todos.filter(t=>t.id!==id)); return; }
     try { await api(`/api/todos/${id}`, { method: "DELETE" }); }
     catch (e:any) { setTodos(old); setError(e?.message || "Failed to delete"); }
   }
