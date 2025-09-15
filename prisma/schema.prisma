@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -12,16 +12,10 @@ model Todo {
   id        Int      @id @default(autoincrement())
   title     String
   completed Boolean  @default(false)
-  priority  Priority @default(MEDIUM)
+  priority  String   @default("MEDIUM")
   dueAt     DateTime?
   tagsCsv   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
 }
 

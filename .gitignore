@@ -4,7 +4,6 @@ node_modules/
 # Next.js
 .next/
 out/
-.next-static/
 
 # Env
 .env
@@ -23,14 +22,8 @@ Thumbs.db
 
 # Prisma
 prisma/dev.db
-prisma/*.db
-prisma/*.db-journal
-/node_modules/.prisma/
-
-# Vercel/Deploy
-.vercel/
+prisma/*.db*
 
 # Editor
-*.swp
 .vscode/
 .idea/

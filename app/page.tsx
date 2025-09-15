@@ -164,7 +164,41 @@ export default function Page(){
             <option value="due">Due date</option>
           </select>
           <button className="btn-ghost" onClick={()=>{ const next=todos.filter(t=>!t.completed); setTodos(next); if(localMode) writeLocal(next); }}>Clear Completed</button>
-          <button className="btn-ghost" onClick={load}>{loading?"Refreshing… ⏳":"Refresh"}</button>
+          <button
+            className="btn-ghost inline-flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+            onClick={load}
+            disabled={loading}
+            title="Refresh"
+            aria-busy={loading}
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="h-4 w-4 animate-spin text-slate-200"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"
+                  />
+                </svg>
+                <span>Refreshing…</span>
+              </>
+            ) : (
+              <span>Refresh</span>
+            )}
+          </button>
         </div>
       </div>
 
