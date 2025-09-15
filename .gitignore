@@ -27,3 +27,8 @@ prisma/*.db*
 # Editor
 .vscode/
 .idea/
+
+# Capacitor / Native
+android/
+ios/
+capacitor-build/

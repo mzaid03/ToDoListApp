@@ -8,6 +8,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma db push && next build",
+    "build:static": "next build && next export",
+    "mobile:init": "cap init ToDoListApp com.example.todolist --web-dir=out || true",
+    "mobile:sync": "npm run build:static && cap sync",
+    "mobile:ios": "npm run mobile:sync && cap open ios",
+    "mobile:android": "npm run mobile:sync && cap open android",
     "start": "next start",
   "start:prod": "(npx prisma migrate deploy || npx prisma db push || true) && npx prisma generate && next start -p ${PORT:-3000} -H 0.0.0.0",
     "lint": "next lint",
@@ -19,11 +24,15 @@
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
     "@types/node": "24.4.0",
     "@types/react": "19.1.13",
     "autoprefixer": "^10.4.20",

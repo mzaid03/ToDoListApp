@@ -52,3 +52,21 @@ Docker (fallback if Nixpacks/Railpack fails):
 ## Notes
 - A `postinstall` script runs `prisma generate`, which helps most Node hosts.
 - To get case‑insensitive search on SQLite, consider maintaining lowercase shadow columns or switch to Postgres.
+
+## Mobile (iOS and Android)
+
+This web app can be wrapped as a mobile app using Capacitor.
+
+Prerequisites: Xcode for iOS on macOS, Android Studio for Android, Node.js installed.
+
+Steps:
+1. Install dependencies and initialize Capacitor configuration.
+	- `npm install`
+	- `npm run mobile:init`
+2. Build a static bundle and sync to native projects.
+	- `npm run mobile:sync`
+3. Open the native project for platform‑specific build and submission.
+	- iOS: `npm run mobile:ios` then build and archive in Xcode.
+	- Android: `npm run mobile:android` then build a release in Android Studio.
+
+For device testing over LAN during development, set an environment variable `CAP_SERVER_URL` to your machine IP and dev port, for example `http://192.168.1.10:3000`, then run `npm run dev` and install the app on the device.
