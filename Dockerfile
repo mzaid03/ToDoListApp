@@ -1,11 +1,13 @@
 # Railway-compatible Dockerfile for Next.js app router + Prisma + SQLite
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:18-bookworm-slim AS builder
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PRISMA_SKIP_POSTINSTALL_GENERATE=1
-# Install openssl for Prisma engines
-RUN apk add --no-cache openssl
+# Install OpenSSL and CA certs for Prisma engines
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends openssl ca-certificates \
+	&& rm -rf /var/lib/apt/lists/*
 # Install deps
 COPY package*.json ./
 RUN npm ci --ignore-scripts
@@ -17,12 +19,14 @@ RUN npx prisma generate
 RUN npx next build
 
 # Runtime stage
-FROM node:18-alpine AS runner
+FROM node:18-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PRISMA_SKIP_POSTINSTALL_GENERATE=1
-# Install openssl for Prisma engines
-RUN apk add --no-cache openssl
+# Install OpenSSL and CA certs for Prisma engines
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends openssl ca-certificates \
+	&& rm -rf /var/lib/apt/lists/*
 # Install only prod deps
 COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts
