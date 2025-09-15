@@ -26,6 +26,8 @@ export default function Page(){
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string|null>(null);
   const [localMode, setLocalMode] = useState(false);
+  const [hideOffline, setHideOffline] = useState(false);
+  const [sortBy, setSortBy] = useState<'created'|'priority'|'due'>('created');
 
   // Simple local fallback store
   function readLocal(): Todo[] {
@@ -133,10 +135,13 @@ export default function Page(){
 
   return (
     <div className="grid gap-4">
-      {localMode && (
-        <div className="card p-3 border-amber-500/20">
-          <div className="text-amber-300 font-medium">Offline mode: storing tasks in your browser</div>
-          <div className="text-slate-300 text-sm">Connect a database later and the app will switch automatically.</div>
+      {localMode && !hideOffline && (
+        <div className="card p-3 border-amber-500/20 flex items-start justify-between gap-3">
+          <div>
+            <div className="text-amber-300 font-medium">Offline mode: storing tasks in your browser</div>
+            <div className="text-slate-300 text-sm">Connect a database later and the app will switch automatically.</div>
+          </div>
+          <button className="btn-ghost" onClick={()=>setHideOffline(true)}>Dismiss</button>
         </div>
       )}
 
@@ -145,7 +150,15 @@ export default function Page(){
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-slate-400">{counts.open} open · {counts.done} done · {counts.total} total</div>
-        <button className="btn-ghost" onClick={load}>{loading?"Loading…":"Refresh"}</button>
+        <div className="flex items-center gap-2">
+          <select className="select" value={sortBy} onChange={e=>setSortBy(e.target.value as any)}>
+            <option value="created">Newest</option>
+            <option value="priority">Priority</option>
+            <option value="due">Due date</option>
+          </select>
+          <button className="btn-ghost" onClick={()=>{ const next=todos.filter(t=>!t.completed); setTodos(next); if(localMode) writeLocal(next); }}>Clear Completed</button>
+          <button className="btn-ghost" onClick={load}>{loading?"Loading…":"Refresh"}</button>
+        </div>
       </div>
 
       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
@@ -172,7 +185,12 @@ export default function Page(){
         <div className="text-slate-400">No tasks match your filters.</div>
       ) : (
         <div className="grid gap-3">
-          {todos.map(t => (
+          {([...todos].sort((a,b)=>{
+            if (sortBy==='created') return new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime();
+            if (sortBy==='priority') return (b.priority>a.priority?1:-1);
+            if (sortBy==='due') return new Date(a.dueAt||'9999-12-31').getTime()-new Date(b.dueAt||'9999-12-31').getTime();
+            return 0;
+          })).map(t => (
             <TodoItem key={t.id} todo={t} onToggle={toggle} onDelete={remove} onRename={rename} />
           ))}
         </div>

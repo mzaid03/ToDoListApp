@@ -56,7 +56,11 @@ export default function TodoItem({ todo, onToggle, onDelete, onRename }:{
           <div className="flex flex-wrap items-center gap-2">
             <span className={`truncate ${todo.completed ? 'line-through text-slate-400' : ''}`}>{todo.title}</span>
             <span className={`tag ${chipClass}`}>{todo.priority}</span>
-            {todo.dueAt && (<span className="tag">Due {new Date(todo.dueAt).toLocaleDateString()}</span>)}
+            {todo.dueAt && (
+              <span className={`tag ${(!todo.completed && new Date(todo.dueAt) < new Date()) ? 'overdue' : ''}`}>
+                Due {new Date(todo.dueAt).toLocaleDateString()}
+              </span>
+            )}
             {todo.tagsCsv && todo.tagsCsv.split(",").filter(Boolean).slice(0,4).map(t=> (
               <span key={t} className="tag">#{t.trim()}</span>
             ))}

@@ -1,6 +1,7 @@
 
 "use client";
 import { useState } from "react";
+import PriorityPicker from "./PriorityPicker";
 
 export type NewTodo = {
   title: string;
@@ -35,11 +36,7 @@ export default function TodoForm({ onCreate }: { onCreate: (t: NewTodo) => Promi
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="grid gap-2">
           <label className="text-sm text-slate-300">Priority</label>
-          <select className="select" value={priority} onChange={e=>setPriority(e.target.value as any)}>
-            <option>LOW</option>
-            <option>MEDIUM</option>
-            <option>HIGH</option>
-          </select>
+          <PriorityPicker value={priority} onChange={setPriority} />
         </div>
         <div className="grid gap-2">
           <label className="text-sm text-slate-300">Due date</label>

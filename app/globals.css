@@ -18,7 +18,7 @@ body {
 .btn-primary { @apply btn bg-brand-600 hover:bg-brand-700 text-white shadow-glow; }
 .btn-ghost { @apply btn bg-white/10 hover:bg-white/20; }
 .input { @apply w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-brand-600; }
-.select { @apply rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-600; }
+.select { @apply rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-600 text-slate-100 placeholder:text-slate-400; }
 .checkbox { @apply h-5 w-5 rounded border border-white/20 bg-white/10 cursor-pointer transition; }
 .tag { @apply inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-slate-200; }
 
@@ -29,3 +29,6 @@ body {
 
 /* Skeleton */
 .skeleton { @apply rounded-xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 bg-[length:200%_100%] animate-shimmer; }
+
+/* Overdue */
+.overdue { @apply bg-red-500/15 text-red-200 border border-red-500/30; }
