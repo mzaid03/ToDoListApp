@@ -10,7 +10,8 @@
     "build": "prisma db push && next build",
     "build:static": "next build && next export",
     "mobile:init": "cap init ToDoListApp com.example.todolist --web-dir=out || true",
-    "mobile:sync": "npm run build:static && cap sync",
+  "mobile:assets": "cap assets generate --icon=resources/icon.svg --splash=resources/splash.svg || echo 'Install @capacitor/assets if missing'",
+  "mobile:sync": "npm run build:static && npm run mobile:assets && cap sync",
     "mobile:ios": "npm run mobile:sync && cap open ios",
     "mobile:android": "npm run mobile:sync && cap open android",
     "start": "next start",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
+    "@capacitor/assets": "^3.0.5",
     "@types/node": "24.4.0",
     "@types/react": "19.1.13",
     "autoprefixer": "^10.4.20",

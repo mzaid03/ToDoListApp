@@ -63,9 +63,11 @@ Steps:
 1. Install dependencies and initialize Capacitor configuration.
 	- `npm install`
 	- `npm run mobile:init`
-2. Build a static bundle and sync to native projects.
+2. Generate app icons and splash screens.
+	- `npm run mobile:assets`
+3. Build a static bundle and sync to native projects.
 	- `npm run mobile:sync`
-3. Open the native project for platform‑specific build and submission.
+4. Open the native project for platform‑specific build and submission.
 	- iOS: `npm run mobile:ios` then build and archive in Xcode.
 	- Android: `npm run mobile:android` then build a release in Android Studio.
 
