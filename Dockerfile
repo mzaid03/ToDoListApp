@@ -41,8 +41,8 @@ COPY --from=builder /app/tailwind.config.ts ./
 COPY --from=builder /app/postcss.config.js ./
 COPY --from=builder /app/tsconfig.json ./
 COPY --from=builder /app/prisma ./prisma
-# Ensure Prisma client is available in runtime image (schema is now present)
-RUN npx prisma generate
+# Ensure Prisma client is available in runtime image using ephemeral CLI
+RUN npx --yes prisma@5.19.1 generate
 # Expose port
 EXPOSE 3000
 # Start with migration deploy (or db push) then server
