@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "prisma db push && next build",
     "start": "next start",
-    "start:prod": "prisma migrate deploy || prisma db push && next start",
+    "start:prod": "(npx prisma migrate deploy || npx prisma db push) && next start -p ${PORT:-3000} -H 0.0.0.0",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
