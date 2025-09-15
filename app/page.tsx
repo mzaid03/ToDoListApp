@@ -55,10 +55,12 @@ export default function Page(){
       }
     } catch (e:any) {
       const msg = e?.message || "Failed to load to‑dos";
-      setError(msg);
       if (/^Database not configured/i.test(msg)) {
         setLocalMode(true);
         setTodos(readLocal());
+        setError(null); // hide scary red error once we switch to local mode
+      } else {
+        setError(msg);
       }
     } finally {
       setLoading(false);
@@ -71,6 +73,11 @@ export default function Page(){
   useEffect(() => {
     function onKey(e: KeyboardEvent){ if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); document.getElementById('search')?.focus(); } }
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Hydrate offline banner dismissal
+  useEffect(() => {
+    try { setHideOffline(localStorage.getItem('hideOffline') === '1'); } catch {}
   }, []);
 
   async function createTodo(newTodo: NewTodo){
@@ -141,7 +148,7 @@ export default function Page(){
             <div className="text-amber-300 font-medium">Offline mode: storing tasks in your browser</div>
             <div className="text-slate-300 text-sm">Connect a database later and the app will switch automatically.</div>
           </div>
-          <button className="btn-ghost" onClick={()=>setHideOffline(true)}>Dismiss</button>
+          <button className="btn-ghost" onClick={()=>{ setHideOffline(true); try{ localStorage.setItem('hideOffline','1'); }catch{} }}>Dismiss</button>
         </div>
       )}
 
