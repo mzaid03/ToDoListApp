@@ -8,7 +8,7 @@ ENV PRISMA_SKIP_POSTINSTALL_GENERATE=1
 RUN apk add --no-cache openssl
 # Install deps
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 # Copy source and build
 COPY . .
 # Generate Prisma client now that schema is present
@@ -25,7 +25,7 @@ ENV PRISMA_SKIP_POSTINSTALL_GENERATE=1
 RUN apk add --no-cache openssl
 # Install only prod deps
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 # Copy built app and necessary files
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
