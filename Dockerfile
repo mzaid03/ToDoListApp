@@ -10,7 +10,10 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 # Install deps
 COPY package*.json ./
+# Install devDependencies for build (Tailwind/PostCSS) then switch back
+ENV NODE_ENV=development
 RUN npm ci --ignore-scripts
+ENV NODE_ENV=production
 # Copy source and build
 COPY . .
 # Generate Prisma client now that schema is present
