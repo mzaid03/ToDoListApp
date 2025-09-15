@@ -25,11 +25,11 @@ This app is built for Next.js 14 App Router + Prisma. You can deploy with:
 1. Create a Postgres DB (e.g., Neon), copy the connection string.
 2. Set the env var in Vercel:
 	- `DATABASE_URL=<your_postgres_connection_string>`
-3. Initialize schema on the remote DB (one-time):
-```bash
-DATABASE_URL="<your_connection_string>" npm run prisma:deploy || npm run prisma:push
-```
-4. Push to GitHub and import the repo in Vercel. The `postinstall` will run `prisma generate` automatically.
+3. Push to GitHub and import the repo in Vercel.
+	- Build Command: uses `npm run build` which runs `prisma db push && next build`
+	- Install Command: `npm ci` (default)
+	- Start Command (if needed for non-serverless): `npm run start`
+4. First deploy will create tables automatically via `prisma db push`.
 
 Note: If you stay on SQLite, Vercel’s serverless file system is ephemeral; your data won’t persist across deployments.
 

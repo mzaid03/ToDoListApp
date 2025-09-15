@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q")?.toLowerCase() ?? "";
+  const q = searchParams.get("q") ?? "";
   const status = searchParams.get("status") ?? "all";
   const priority = searchParams.get("priority") ?? "all";
 
@@ -17,8 +17,8 @@ export async function GET(req: Request) {
       ...where,
       OR: q
         ? [
-            { title: { contains: q } },
-            { tagsCsv: { contains: q } },
+            { title: { contains: q, mode: "insensitive" } },
+            { tagsCsv: { contains: q, mode: "insensitive" } },
           ]
         : undefined,
     },
