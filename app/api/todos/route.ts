@@ -1,11 +1,18 @@
 
 import { NextResponse } from "next/server";
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   try {
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: "Database not configured. Set DATABASE_URL on the server." },
+        { status: 503 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
-    const q = searchParams.get("q") ?? "";
+    const q = searchParams.get("q")?.toLowerCase() ?? "";
     const status = searchParams.get("status") ?? "all";
     const priority = searchParams.get("priority") ?? "all";
 
@@ -18,8 +25,8 @@ export async function GET(req: Request) {
         ...where,
         OR: q
           ? [
-              { title: { contains: q, mode: "insensitive" } },
-              { tagsCsv: { contains: q, mode: "insensitive" } },
+              { title: { contains: q } },
+              { tagsCsv: { contains: q } },
             ]
           : undefined,
       },
@@ -34,6 +41,12 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: "Database not configured. Set DATABASE_URL on the server." },
+        { status: 503 }
+      );
+    }
     const body = await req.json();
     const { title, priority = "MEDIUM", dueAt, tagsCsv } = body ?? {};
     if (!title || typeof title !== "string") return NextResponse.json({ error: "Title required" }, { status: 400 });

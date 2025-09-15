@@ -1,9 +1,9 @@
 
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import TodoForm, { NewTodo } from "../components/TodoForm";
-import TodoItem, { Todo } from "../components/TodoItem";
-import FilterBar from "../components/FilterBar";
+import TodoForm, { NewTodo } from "@/components/TodoForm";
+import TodoItem, { Todo } from "@/components/TodoItem";
+import FilterBar from "@/components/FilterBar";
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, { ...init, headers: { "Content-Type": "application/json", ...(init?.headers||{}) } });
@@ -102,6 +102,11 @@ export default function Page(){
       {error ? (
         <div className="card p-3 text-red-300">
           <div className="font-medium">{error}</div>
+          {/^Database not configured/i.test(error || "") && (
+            <div className="text-slate-300 mt-2 text-sm">
+              The server is running but the database isn’t configured. Set the <code>DATABASE_URL</code> environment variable on your host and redeploy.
+            </div>
+          )}
           <button className="btn-ghost mt-2" onClick={load}>Try again</button>
         </div>
       ) : loading ? (
