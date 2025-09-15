@@ -1,0 +1,99 @@
+
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import TodoForm, { NewTodo } from "@/components/TodoForm";
+import TodoItem, { Todo } from "@/components/TodoItem";
+import FilterBar from "@/components/FilterBar";
+
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(path, { ...init, headers: { "Content-Type": "application/json", ...(init?.headers||{}) } });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export default function Page(){
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filters, setFilters] = useState<{q:string; status:"all"|"open"|"done"; priority: "all"|"LOW"|"MEDIUM"|"HIGH"}>({ q:"", status:"all", priority:"all" });
+  const [loading, setLoading] = useState(true);
+
+  async function load(){
+    setLoading(true);
+    const params = new URLSearchParams({ q: filters.q, status: filters.status, priority: filters.priority });
+    const data = await api<Todo[]>(`/api/todos?${params.toString()}`);
+    setTodos(data);
+    setLoading(false);
+  }
+
+  useEffect(()=>{ load(); }, [filters.q, filters.status, filters.priority]);
+
+  async function createTodo(newTodo: NewTodo){
+    const optimistic: Todo = {
+      id: Math.random()*1e9|0,
+      title: newTodo.title,
+      completed: false,
+      priority: newTodo.priority,
+      dueAt: newTodo.dueAt ?? null,
+      tagsCsv: newTodo.tagsCsv ?? null,
+      createdAt: new Date().toISOString(),
+    };
+    setTodos(prev => [optimistic, ...prev]);
+    try {
+      const created = await api<Todo>(`/api/todos`, { method: "POST", body: JSON.stringify(newTodo) });
+      setTodos(prev => prev.map(t => t.id === optimistic.id ? created : t));
+    } catch (e){
+      setTodos(prev => prev.filter(t => t.id !== optimistic.id));
+      alert("Failed to create to‑do");
+    }
+  }
+
+  async function toggle(id:number, completed:boolean){
+    const old = todos;
+    setTodos(prev => prev.map(t => t.id===id ? { ...t, completed } : t));
+    try { await api(`/api/todos/${id}`, { method: "PATCH", body: JSON.stringify({ completed }) }); }
+    catch { setTodos(old); alert("Failed to update"); }
+  }
+
+  async function rename(id:number, title:string){
+    const old = todos;
+    setTodos(prev => prev.map(t => t.id===id ? { ...t, title } : t));
+    try { await api(`/api/todos/${id}`, { method: "PATCH", body: JSON.stringify({ title }) }); }
+    catch { setTodos(old); alert("Failed to rename"); }
+  }
+
+  async function remove(id:number){
+    const old = todos;
+    setTodos(prev => prev.filter(t => t.id!==id));
+    try { await api(`/api/todos/${id}`, { method: "DELETE" }); }
+    catch { setTodos(old); alert("Failed to delete"); }
+  }
+
+  const counts = useMemo(()=>({
+    total: todos.length,
+    open: todos.filter(t=>!t.completed).length,
+    done: todos.filter(t=>t.completed).length,
+  }), [todos]);
+
+  return (
+    <div className="grid gap-4">
+      <TodoForm onCreate={createTodo} />
+      <FilterBar onChange={setFilters as any} />
+
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-slate-400">{counts.open} open · {counts.done} done · {counts.total} total</div>
+        <button className="btn-ghost" onClick={load}>{loading?"Loading…":"Refresh"}</button>
+      </div>
+
+      {loading ? (
+        <div className="text-slate-400">Loading tasks…</div>
+      ) : todos.length === 0 ? (
+        <div className="text-slate-400">No tasks match your filters.</div>
+      ) : (
+        <div className="grid gap-3">
+          {todos.map(t => (
+            <TodoItem key={t.id} todo={t} onToggle={toggle} onDelete={remove} onRename={rename} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

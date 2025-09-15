@@ -1,0 +1,13 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.card { @apply rounded-2xl border border-white/10 bg-white/5 shadow-lg; }
+.btn { @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition active:scale-[.98]; }
+.btn-primary { @apply btn bg-blue-600 hover:bg-blue-500 text-white; }
+.btn-ghost { @apply btn bg-white/10 hover:bg-white/20; }
+.input { @apply w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500; }
+.select { @apply rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500; }
+.checkbox { @apply h-5 w-5 rounded border border-white/20 bg-white/10 cursor-pointer; }
+.tag { @apply inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-200; }
