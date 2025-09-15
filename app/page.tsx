@@ -49,8 +49,8 @@ export default function Page(){
         if (q) items = items.filter(t => t.title.toLowerCase().includes(q) || (t.tagsCsv||"").toLowerCase().includes(q));
         setTodos(items);
       } else {
-        const params = new URLSearchParams({ q: filters.q, status: filters.status, priority: filters.priority });
-        const data = await api<Todo[]>(`/api/todos?${params.toString()}`);
+        const params = new URLSearchParams({ q: filters.q, status: filters.status, priority: filters.priority, _t: String(Date.now()) });
+        const data = await api<Todo[]>(`/api/todos?${params.toString()}`, { cache: 'no-store' as any });
         setTodos(data);
       }
     } catch (e:any) {
@@ -158,13 +158,13 @@ export default function Page(){
       <div className="flex items-center justify-between">
         <div className="text-sm text-slate-400">{counts.open} open · {counts.done} done · {counts.total} total</div>
         <div className="flex items-center gap-2">
-          <select className="select" value={sortBy} onChange={e=>setSortBy(e.target.value as any)}>
+          <select className="select-contrast" value={sortBy} onChange={e=>setSortBy(e.target.value as any)}>
             <option value="created">Newest</option>
             <option value="priority">Priority</option>
             <option value="due">Due date</option>
           </select>
           <button className="btn-ghost" onClick={()=>{ const next=todos.filter(t=>!t.completed); setTodos(next); if(localMode) writeLocal(next); }}>Clear Completed</button>
-          <button className="btn-ghost" onClick={load}>{loading?"Loading…":"Refresh"}</button>
+          <button className="btn-ghost" onClick={load}>{loading?"Refreshing… ⏳":"Refresh"}</button>
         </div>
       </div>
 
