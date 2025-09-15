@@ -3,11 +3,29 @@
 @tailwind components;
 @tailwind utilities;
 
-.card { @apply rounded-2xl border border-white/10 bg-white/5 shadow-lg; }
-.btn { @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition active:scale-[.98]; }
-.btn-primary { @apply btn bg-blue-600 hover:bg-blue-500 text-white; }
+:root { color-scheme: dark; }
+
+body {
+	@apply bg-slate-950 text-slate-100;
+	background-image: radial-gradient(60% 60% at 10% 10%, rgba(99,102,241,.08), transparent),
+		radial-gradient(40% 40% at 90% 10%, rgba(14,165,233,.08), transparent),
+		radial-gradient(30% 30% at 50% 90%, rgba(16,185,129,.08), transparent);
+	background-attachment: fixed;
+}
+
+.card { @apply rounded-2xl border border-white/10 bg-white/5 shadow-lg shadow-black/30 backdrop-blur-xl; }
+.btn { @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition active:scale-[.98] disabled:opacity-60 disabled:cursor-not-allowed; }
+.btn-primary { @apply btn bg-brand-600 hover:bg-brand-700 text-white shadow-glow; }
 .btn-ghost { @apply btn bg-white/10 hover:bg-white/20; }
-.input { @apply w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500; }
-.select { @apply rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500; }
-.checkbox { @apply h-5 w-5 rounded border border-white/20 bg-white/10 cursor-pointer; }
-.tag { @apply inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-200; }
+.input { @apply w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-brand-600; }
+.select { @apply rounded-xl bg-white/10 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-600; }
+.checkbox { @apply h-5 w-5 rounded border border-white/20 bg-white/10 cursor-pointer transition; }
+.tag { @apply inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-slate-200; }
+
+/* Priority chips */
+.chip-high { @apply bg-red-500/20 text-red-200 border border-red-500/30; }
+.chip-medium { @apply bg-amber-500/20 text-amber-200 border border-amber-500/30; }
+.chip-low { @apply bg-emerald-500/20 text-emerald-200 border border-emerald-500/30; }
+
+/* Skeleton */
+.skeleton { @apply rounded-xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 bg-[length:200%_100%] animate-shimmer; }

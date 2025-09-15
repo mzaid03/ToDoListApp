@@ -38,8 +38,9 @@ export default function TodoItem({ todo, onToggle, onDelete, onRename }:{
     finally { setToggling(false); }
   }
 
+  const chipClass = todo.priority === 'HIGH' ? 'chip-high' : todo.priority === 'LOW' ? 'chip-low' : 'chip-medium';
   return (
-    <div className="card p-3 flex items-start gap-3">
+    <div className="card p-3 flex items-start gap-3 animate-fadeInUp">
       <input
         aria-label="toggle"
         type="checkbox"
@@ -54,7 +55,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onRename }:{
         ) : (
           <div className="flex flex-wrap items-center gap-2">
             <span className={`truncate ${todo.completed ? 'line-through text-slate-400' : ''}`}>{todo.title}</span>
-            <span className="tag">{todo.priority}</span>
+            <span className={`tag ${chipClass}`}>{todo.priority}</span>
             {todo.dueAt && (<span className="tag">Due {new Date(todo.dueAt).toLocaleDateString()}</span>)}
             {todo.tagsCsv && todo.tagsCsv.split(",").filter(Boolean).slice(0,4).map(t=> (
               <span key={t} className="tag">#{t.trim()}</span>

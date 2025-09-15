@@ -65,6 +65,12 @@ export default function Page(){
 
   useEffect(()=>{ load(); }, [filters.q, filters.status, filters.priority]);
 
+  // Ctrl+K focuses search
+  useEffect(() => {
+    function onKey(e: KeyboardEvent){ if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); document.getElementById('search')?.focus(); } }
+    window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   async function createTodo(newTodo: NewTodo){
     const optimistic: Todo = {
       id: Math.random()*1e9|0,
@@ -123,15 +129,27 @@ export default function Page(){
     open: todos.filter(t=>!t.completed).length,
     done: todos.filter(t=>t.completed).length,
   }), [todos]);
+  const progress = counts.total ? Math.round((counts.done / counts.total) * 100) : 0;
 
   return (
     <div className="grid gap-4">
+      {localMode && (
+        <div className="card p-3 border-amber-500/20">
+          <div className="text-amber-300 font-medium">Offline mode: storing tasks in your browser</div>
+          <div className="text-slate-300 text-sm">Connect a database later and the app will switch automatically.</div>
+        </div>
+      )}
+
       <TodoForm onCreate={createTodo} />
       <FilterBar onChange={setFilters as any} />
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-slate-400">{counts.open} open · {counts.done} done · {counts.total} total</div>
         <button className="btn-ghost" onClick={load}>{loading?"Loading…":"Refresh"}</button>
+      </div>
+
+      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+        <div className="h-full bg-brand-600 transition-all" style={{ width: `${progress}%` }} />
       </div>
 
       {error ? (
@@ -145,7 +163,11 @@ export default function Page(){
           <button className="btn-ghost mt-2" onClick={load}>Try again</button>
         </div>
       ) : loading ? (
-        <div className="text-slate-400">Loading tasks…</div>
+        <div className="grid gap-3">
+          <div className="skeleton h-16" />
+          <div className="skeleton h-16" />
+          <div className="skeleton h-16" />
+        </div>
       ) : todos.length === 0 ? (
         <div className="text-slate-400">No tasks match your filters.</div>
       ) : (

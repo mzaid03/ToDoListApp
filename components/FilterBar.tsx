@@ -13,7 +13,7 @@ export default function FilterBar({ onChange }: { onChange: (f: Filters) => void
 
   return (
     <div className="card p-3 mb-4 grid gap-3 sm:grid-cols-3">
-      <input className="input" placeholder="Search title or tags…" value={q} onChange={e=>setQ(e.target.value)} />
+      <input id="search" className="input" placeholder="Search title or tags… (Ctrl+K)" value={q} onChange={e=>setQ(e.target.value)} />
       <select className="select" value={status} onChange={e=>setStatus(e.target.value as Filters["status"])}>
         <option value="all">All</option>
         <option value="open">Open</option>
